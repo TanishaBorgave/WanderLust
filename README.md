@@ -2,7 +2,7 @@
 
 A full-stack MERN property rental platform inspired by Airbnb that enables users to discover, list, and manage vacation rentals through a modern, responsive interface.
 
-StayNest is being built using the MERN stack with secure authentication, scalable REST APIs, cloud-based image storage, and an intuitive user experience.
+WanderLust is being built using the MERN stack with secure authentication, scalable REST APIs, cloud-based image storage, and an intuitive user experience.
 
 ---
 
