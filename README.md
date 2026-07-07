@@ -1,4 +1,4 @@
-# 🏡 StayNest
+# 🏡 WanderLust
 
 A full-stack MERN property rental platform inspired by Airbnb that enables users to discover, list, and manage vacation rentals through a modern, responsive interface.
 
