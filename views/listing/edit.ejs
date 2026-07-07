@@ -4,31 +4,37 @@
         <br />
     <h3>Edit Listing</h3>
     <br />
-    <form method="POST" action="/listings/<%=listing._id%>?_method=PUT">
+    <form method="POST" action="/listings/<%=listing._id%>?_method=PUT" novalidate class="needs-validation">
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
-            <input name="listing[title]" placeholder="Add a catchy title" type="text" class="form-control" value="<%=listing.title%>">
+            <input name="listing[title]" placeholder="Add a catchy title" type="text" class="form-control" value="<%=listing.title%>" required>
+            <div class="valid-feedback">Looks good!</div>
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
-            <textarea name="listing[description]" class="form-control"><%=listing.description%></textarea>
+            <textarea name="listing[description]" class="form-control" required><%=listing.description%></textarea>
+            <div class="invalid-feedback">Please provide a valid description.</div>
         </div>
         <div class="row">
         <div class="mb-3 col-md-4">
             <label for="price" class="form-label">Price</label>
-            <input name="listing[price]" placeholder="1200" type="number" class="form-control" value="<%=listing.price%>">
+            <input name="listing[price]" placeholder="1200" class="form-control" value="<%=listing.price%>" required>
+            <div class="invalid-feedback">Please provide a valid price.</div>
         </div>
         <div class="mb-3 col-md-8">
             <label for="location" class="form-label">Location</label>
-            <input name="listing[location]" placeholder="Mumbai, Maharashtra" type="text" class="form-control" value="<%=listing.location%>">
+            <input name="listing[location]" placeholder="Mumbai, Maharashtra" type="text" class="form-control" value="<%=listing.location%>" required>
+            <div class="invalid-feedback">Please provide a valid location.</div>
         </div>
         </div>
         <div class="mb-3 ">
             <label for="country" class="form-label">Country</label>
-            <input name="listing[country]" placeholder="India" type="text" class="form-control" value="<%=listing.country%>">
+            <input name="listing[country]" placeholder="India" type="text" class="form-control" value="<%=listing.country%>" required>
+            <div class="invalid-feedback">Please provide a valid country.</div>
         </div>
         <button class="btn btn-dark edit-btn mt-3">Update Listing</button>
 
     </form>
     </div>
     </div>
+    <script src = "/js/script.js"></script>

@@ -5,6 +5,9 @@ const Listing = require('./models/listing');
 const path = require('path');
 const methodOverride = require('method-override');
 const ejsMate=require('ejs-mate');
+const wrapAsync = require('./utils/wrapAsync');
+const ExpressError = require('./utils/ExpressError');
+const { listingSchema } = require('./schema.js');
 
 app.use(methodOverride('_method'));
 app.engine('ejs',ejsMate);
@@ -30,12 +33,21 @@ app.get('/',(req,res)=>{
     res.send('hi');;
 });
 
-app.get('/listings',async(req,res)=>{
+const ValidateListing = (req, res, next) => {
+    let { error } = listingSchema.validate(req.body);
+    if (error) {
+        let errmsg = error.details.map(el=> el.message).join(',');
+        throw new ExpressError(errmsg, 400);
+    }
+    next();
+};
+
+app.get('/listings',wrapAsync(async(req,res)=>{
     const listings = await Listing.find({})
     res.render('listing/listings.ejs',{listings})
-});
+}));
 
-app.get('/testlisting',async (req,res)=>{
+app.get('/testlisting',wrapAsync(async (req,res)=>{
     let sampleLisiting = new Listing({
         title: "Sample Listing",
         description: "This is a sample listing for testing purposes.",
@@ -47,42 +59,58 @@ app.get('/testlisting',async (req,res)=>{
     await sampleLisiting.save();
     console.log('Sample listing saved to the database');
     res.send('Sample listing saved to the database');
-});
+}));
 
 app.get('/listings/new', (req, res) => {
     res.render('listing/new.ejs');
 })
 
-app.get('/listings/:id',async(req,res)=>{
+app.get('/listings/:id',wrapAsync(async(req,res)=>{
     const {id} = req.params;
     const listing = await Listing.findById(id);
     res.render('listing/show.ejs',{listing});
-});
+}));
 
-app.post('/listings',async(req,res)=>{
+app.post('/listings',ValidateListing,wrapAsync(async(req,res,next)=>{
     //const{title,description,image,price,location,country} = req.body;
     let listing = new Listing(req.body.listing);
     await listing.save();
     res.redirect(`/listings`);
-});
+}));
 
-app.get('/listings/:id/edit',async(req,res)=>{
+app.get('/listings/:id/edit',ValidateListing,wrapAsync(async(req,res)=>{
     const {id} = req.params;
     const listing = await Listing.findById(id);
     res.render('listing/edit.ejs',{listing});
-})
+}));
 
-app.put('/listings/:id',async(req,res)=>{
+app.put('/listings/:id',ValidateListing,wrapAsync(async(req,res)=>{
     const {id} = req.params;
     await Listing.findByIdAndUpdate(id,{...req.body.listing});
     res.redirect(`/listings`);
-});
+}));
 
-app.delete('/listings/:id',async(req,res)=>{
+app.delete('/listings/:id',wrapAsync(async(req,res)=>{
     const{id} = req.params;
     await Listing.findByIdAndDelete(id);
     res.redirect('/listings');
-})
+}));
+
+app.use((req, res, next) => {
+    next(new ExpressError("Page Not Found", 404));
+});
+
+app.use((err, req, res, next) => {
+    let { statusCode = 500, message = "Something went wrong!" } = err;
+
+    res.status(statusCode).render("error.ejs", {
+        err: {
+            statusCode,
+            message
+        }
+    });
+});
+
 app.listen(3000,()=>{
     console.log('Server is running on port 3000');
 });

@@ -1,0 +1,28 @@
+<% layout("/layouts/boilerplate") %>
+
+    <div class="error-container">
+        <div class="error-card">
+
+            <div class="error-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h1>Oops!</h1>
+
+            <h3><%= err.statusCode %></h3>
+
+            <p class="error-message"> <%= err.message %></p>
+
+            <div class="btn-group mt-4">
+                <a href="/listings" class="btn btn-danger">
+                    <i class="fa-solid fa-house"></i>
+                    Home
+                </a>
+
+                <button class="btn btn-outline-dark" onclick="history.back()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Go Back
+                </button>
+            </div>
+
+        </div>
+    </div>

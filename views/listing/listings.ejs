@@ -10,7 +10,7 @@
                 <p class="card-text">
                   <b><%= listing.title %></b>
                 <br>
-                <%= listing.price.toLocaleString("en-IN", { style: "currency" , currency: "INR" }) %> / night
+            ₹ <%= listing.price ? listing.price.toLocaleString("en-IN") : 0 %> / night
                 </p>
             </div>
         </div>

@@ -114,3 +114,95 @@ body{
     padding-left:0;
     
 }
+
+.error-container {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.error-card {
+    width: 550px;
+    text-align: center;
+    background: #fff;
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, .12);
+    animation: pop .5s ease;
+}
+
+.error-icon {
+    font-size: 5rem;
+    color: #fe424d;
+    animation: shake 1s ease infinite;
+}
+
+.error-card h1 {
+    margin-top: 1rem;
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.error-card h3 {
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    font-size: 1.15rem;
+    color: #555;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-danger {
+    background: #fe424d !important;
+    border: none !important;
+}
+
+.btn-danger:hover {
+    background: #e53945 !important;
+}
+
+@keyframes pop {
+    from {
+        transform: scale(.7);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes shake {
+    0% {
+        transform: rotate(0);
+    }
+
+    20% {
+        transform: rotate(10deg);
+    }
+
+    40% {
+        transform: rotate(-10deg);
+    }
+
+    60% {
+        transform: rotate(10deg);
+    }
+
+    80% {
+        transform: rotate(-10deg);
+    }
+
+    100% {
+        transform: rotate(0);
+    }
+}
