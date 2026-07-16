@@ -2,12 +2,13 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const Listing = require('./models/listing');
+const review = require('./models/reviews');
 const path = require('path');
 const methodOverride = require('method-override');
 const ejsMate=require('ejs-mate');
 const wrapAsync = require('./utils/wrapAsync');
 const ExpressError = require('./utils/ExpressError');
-const { listingSchema } = require('./schema.js');
+const { listingSchema , reviewSchema } = require('./schema.js');
 
 app.use(methodOverride('_method'));
 app.engine('ejs',ejsMate);
@@ -42,6 +43,15 @@ const ValidateListing = (req, res, next) => {
     next();
 };
 
+const ValidateReview = (req, res, next) => {
+    let { error } = reviewSchema.validate(req.body);
+    if (error) {
+        let errmsg = error.details.map(el => el.message).join(',');
+        throw new ExpressError(errmsg, 400);
+    }
+    next();
+};
+
 app.get('/listings',wrapAsync(async(req,res)=>{
     const listings = await Listing.find({})
     res.render('listing/listings.ejs',{listings})
@@ -67,7 +77,7 @@ app.get('/listings/new', (req, res) => {
 
 app.get('/listings/:id',wrapAsync(async(req,res)=>{
     const {id} = req.params;
-    const listing = await Listing.findById(id);
+    const listing = await Listing.findById(id).populate('reviews');
     res.render('listing/show.ejs',{listing});
 }));
 
@@ -94,6 +104,22 @@ app.delete('/listings/:id',wrapAsync(async(req,res)=>{
     const{id} = req.params;
     await Listing.findByIdAndDelete(id);
     res.redirect('/listings');
+}));
+
+app.post('/listings/:id/reviews',ValidateReview,wrapAsync(async(req,res)=>{
+    let listing = await Listing.findById(req.params.id);
+    let newReview = new review(req.body.review);
+    listing.reviews.push(newReview);
+    await newReview.save();
+    await listing.save();
+    res.redirect(`/listings/${listing._id}`);
+}));
+
+app.delete('/listings/:id/reviews/:reviewId',wrapAsync(async(req,res)=>{
+    const {id, reviewId} = req.params;
+    await Listing.findByIdAndUpdate(id,{$pull:{reviews:reviewId}});
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/listings/${id}`);
 }));
 
 app.use((req, res, next) => {
