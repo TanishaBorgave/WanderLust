@@ -7,10 +7,11 @@
         <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="<%= listing.title %>" />
         <div class="card-body">
             <p class="card-text"> <b><%=listing.title%></b> <br>
-            <%= listing.description %> <br>
-            <%= listing.price.toLocaleString("en-IN", { style: "currency" , currency: "INR" }) %> / night <br>
-            <%= listing.location %> <br>
-            <%= listing.country %> <br>
+            <p>Owned by : <%= listing.owner.username %> </p><br>
+            <p><%= listing.description %> </p><br>
+            <p><%= listing.price.toLocaleString("en-IN", { style: "currency" , currency: "INR" }) %> / night </p> <br>
+            <p><%= listing.location %> </p><br>
+            <p><%= listing.country %> </p><br>
             </p>
         </div>
     </div>
