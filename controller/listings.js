@@ -1,5 +1,5 @@
 const Listing = require('../models/listing')
-
+const axios = require("axios");
 
 module.exports.index = async (req, res) => {
     const listings = await Listing.find({})
@@ -30,6 +30,34 @@ module.exports.createListing = async (req, res, next) => {
     const user = req.user;
     listing.owner = user._id;
     listing.image = { url, filename };
+    const query = `${listing.location}, ${listing.country}`;
+
+    const response = await axios.get(
+        "https://nominatim.openstreetmap.org/search",
+        {
+            params: {
+                q: query,
+                format: "json",
+                limit: 1
+            },
+            headers: {
+                "User-Agent": "Wanderlust-App"
+            }
+        }
+    );
+
+    if (response.data.length > 0) {
+        listing.geometry = {
+            type: "Point",
+            coordinates: [
+                parseFloat(response.data[0].lon), // longitude
+                parseFloat(response.data[0].lat)  // latitude
+            ]
+        };
+    } else {
+        req.flash("error", "Location not found.");
+        return res.redirect("/listings/new");
+    }
     await listing.save();
     req.flash("success", "Successfully made a new listing!");
     res.redirect(`/listings`);
@@ -42,14 +70,63 @@ module.exports.editListing = async (req, res) => {
         req.flash("error", "Cannot find that listing!");
         return res.redirect('/listings');
     }
-    res.render('listing/edit.ejs', { listing });
+    let url = listing.image.url;
+    url = url.replace("/uploads/", "/uploads/w_300/");
+    res.render('listing/edit.ejs', { listing , url });
 }
 
 module.exports.updateListing = async (req, res) => {
     const { id } = req.params;
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-    res.redirect(`/listings`);
-}
+
+    let listing = await Listing.findById(id);
+
+    // Update basic fields
+    listing.title = req.body.listing.title;
+    listing.description = req.body.listing.description;
+    listing.price = req.body.listing.price;
+    listing.location = req.body.listing.location;
+    listing.country = req.body.listing.country;
+
+    // Geocode the updated location
+    const query = `${listing.location}, ${listing.country}`;
+
+    const response = await axios.get(
+        "https://nominatim.openstreetmap.org/search",
+        {
+            params: {
+                q: query,
+                format: "json",
+                limit: 1
+            },
+            headers: {
+                "User-Agent": "Wanderlust-App"
+            }
+        }
+    );
+
+    if (response.data.length > 0) {
+        listing.geometry = {
+            type: "Point",
+            coordinates: [
+                parseFloat(response.data[0].lon), // longitude
+                parseFloat(response.data[0].lat)  // latitude
+            ]
+        };
+    }
+
+    // Update image if a new one is uploaded
+    if (req.file) {
+        listing.image = {
+            url: req.file.path,
+            filename: req.file.filename
+        };
+    }
+
+    await listing.save();
+
+    req.flash("success", "Listing updated successfully!");
+    res.redirect(`/listings/${listing._id}`);
+};
 
 module.exports.deleteListing = async (req, res) => {
     const { id } = req.params;
