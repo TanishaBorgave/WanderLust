@@ -217,8 +217,39 @@ body{
 }
 
 #map {
-    height: 400px;
+    height: 350px;
     width: 100%;
+    border-radius: 16px;
+    margin-top: 25px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid #ddd;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* subtle hover effect */
+#map:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Improve Leaflet popup */
+.leaflet-popup-content-wrapper {
     border-radius: 12px;
-    margin-top: 20px;
+}
+
+.leaflet-popup-content {
+    font-size: 15px;
+    font-weight: 500;
+    padding: 5px;
+}
+
+/* Rounded zoom controls */
+.leaflet-control-zoom {
+    border-radius: 10px !important;
+    overflow: hidden;
+}
+
+.leaflet-control-zoom a {
+    font-size: 18px;
 }
