@@ -1,6 +1,174 @@
 <% layout("/layouts/boilerplate") %>
-    <h3>All Listings</h3>
-    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
+    <!-- <h3>All Listings</h3> -->
+<style>
+.filters-wrapper{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    margin:1rem 0;
+}
+
+#filters{
+    flex:1;
+    display:flex;
+    overflow-x:auto;
+    overflow-y:hidden;
+    white-space:nowrap;
+    gap:2rem;
+    scrollbar-width:none;
+}
+
+#filters::-webkit-scrollbar{
+    display:none;
+}
+
+.filter{
+    flex:0 0 auto;
+    text-align:center;
+    min-width:80px;
+    text-decoration:none;
+    color:inherit;
+    opacity:.8;
+}
+
+.filter:hover{
+    opacity:1;
+}
+
+.filter-btn,
+.tax-switch{
+    flex-shrink:0;
+}
+
+.tax-switch{
+    border:1px solid #ddd;
+    border-radius:15px;
+    padding:.7rem 1rem;
+    background:white;
+}
+</style>
+<div class="row align-items-center mt-3">
+<div class ='col-8'>
+<div id="filters">
+    <a href="/listings?category=Trending" class="filter">
+        <div><i class="fa-solid fa-fire"></i></div>
+        <p>Trending</p>
+    </a>
+
+    <a href="/listings?category=Rooms" class="filter">
+        <div><i class="fa-solid fa-bed"></i></div>
+        <p>Rooms</p>
+    </a>
+
+    <a href="/listings?category=Beach" class="filter">
+        <div><i class="fa-solid fa-umbrella-beach"></i></div>
+        <p>Beach</p>
+    </a>
+
+    <a href="/listings?category=Amazing Pools" class="filter">
+        <div><i class="fa-solid fa-person-swimming"></i></div>
+        <p>Amazing Pools</p>
+    </a>
+
+    <a href="/listings?category=Cabins" class="filter">
+        <div><i class="fa-solid fa-house-chimney"></i></div>
+        <p>Cabins</p>
+    </a>
+
+    <a href="/listings?category=Mountains" class="filter">
+        <div><i class="fa-solid fa-mountain"></i></div>
+        <p>Mountains</p>
+    </a>
+
+    <a href="/listings?category=Arctic" class="filter">
+        <div><i class="fa-solid fa-snowflake"></i></div>
+        <p>Arctic</p>
+    </a>
+
+    <a href="/listings?category=Camping" class="filter">
+        <div><i class="fa-solid fa-campground"></i></div>
+        <p>Camping</p>
+    </a>
+
+    <a href="/listings?category=City" class="filter">
+        <div><i class="fa-solid fa-city"></i></div>
+        <p>City</p>
+    </a>
+
+    <a href="/listings?category=Forest" class="filter">
+        <div><i class="fa-solid fa-tree"></i></div>
+        <p>Forest</p>
+    </a>
+
+    <a href="/listings?category=Lakefront" class="filter">
+        <div><i class="fa-solid fa-water"></i></div>
+        <p>Lakefront</p>
+    </a>
+
+    <a href="/listings?category=Boats" class="filter">
+        <div><i class="fa-solid fa-ship"></i></div>
+        <p>Boats</p>
+    </a>
+
+    <a href="/listings?category=Luxury" class="filter">
+        <div><i class="fa-solid fa-hotel"></i></div>
+        <p>Luxury</p>
+    </a>
+
+    <a href="/listings?category=Family" class="filter">
+        <div><i class="fa-solid fa-people-roof"></i></div>
+        <p>Family</p>
+    </a>
+
+    <a href="/listings?category=Pet Friendly" class="filter">
+        <div><i class="fa-solid fa-paw"></i></div>
+        <p>Pet Friendly</p>
+    </a>
+
+    <a href="/listings?amenity=Free WiFi" class="filter">
+        <div><i class="fa-solid fa-wifi"></i></div>
+        <p>Free WiFi</p>
+    </a>
+
+    <a href="/listings?amenity=Gym" class="filter">
+        <div><i class="fa-solid fa-dumbbell"></i></div>
+        <p>Gym</p>
+    </a>
+
+    <a href="/listings?amenity=Spa" class="filter">
+        <div><i class="fa-solid fa-spa"></i></div>
+        <p>Spa</p>
+    </a>
+
+    <a href="/listings?amenity=Kitchen" class="filter">
+        <div><i class="fa-solid fa-utensils"></i></div>
+        <p>Kitchen</p>
+    </a>
+
+    <a href="/listings?amenity=Parking" class="filter">
+        <div><i class="fa-solid fa-car"></i></div>
+        <p>Parking</p>
+    </a>
+    </div>
+</div>
+<div class="col-4 d-flex justify-content-end align-items-center gap-3">
+
+    <button class="btn btn-outline-dark">
+        <i class="fa-solid fa-sliders"></i> Filters
+    </button>
+
+    <div class="tax-switch">
+        <div class="form-check form-switch m-0">
+            <input class="form-check-input" type="checkbox" id="taxSwitch">
+            <label class="form-check-label ms-2" for="taxSwitch">
+                Display total before taxes
+            </label>
+        </div>
+    </div>
+
+</div>
+</div>
+    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
     <% for(let listing of listings) { %>
         <a href="/listings/<%=listing._id%>" class="listings-link">
         <div class="card col listing-card">
@@ -11,6 +179,7 @@
                   <b><%= listing.title %></b>
                 <br>
             ₹ <%= listing.price ? listing.price.toLocaleString("en-IN") : 0 %> / night
+            <i class="tax-info"> &nbsp; &nbsp;+18% GST</i>
                 </p>
             </div>
         </div>
@@ -20,3 +189,13 @@
     <!-- <form method ="GET" action="/listings/new">
         <button>Create New Listing</button>
     </form> -->
+<script>
+    let taxSwitch = document.getElementById("taxSwitch");
+    taxSwitch.addEventListener("change", function() {
+        let taxinfo = document.querySelectorAll(".tax-info");
+        for(info of taxinfo){
+            info.style.display = taxSwitch.checked ? "inline" : "none";
+        }
+
+    })
+</script>

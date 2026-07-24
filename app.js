@@ -50,10 +50,6 @@ const expressOptions = {
     },
 };
 
-app.get('/', (req, res) => {
-    res.send('hi');;
-});
-
 app.use(session(expressOptions));
 app.use(flash());
 

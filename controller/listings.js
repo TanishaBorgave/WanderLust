@@ -1,10 +1,52 @@
 const Listing = require('../models/listing')
 const axios = require("axios");
 
-module.exports.index = async (req, res) => {
-    const listings = await Listing.find({})
-    res.render('listing/listings.ejs', { listings })
+async function geocodeLocation(query) {
+    try {
+        const response = await axios.get(
+            "https://nominatim.openstreetmap.org/search",
+            {
+                params: {
+                    q: query,
+                    format: "json",
+                    limit: 1
+                },
+                headers: {
+                    "User-Agent": "Wanderlust-App"
+                },
+                timeout: 10000
+            }
+        );
+
+        if (response.data.length > 0) {
+            return {
+                type: "Point",
+                coordinates: [
+                    parseFloat(response.data[0].lon),
+                    parseFloat(response.data[0].lat)
+                ]
+            };
+        }
+    } catch (err) {
+        console.error("Geocoding failed for:", query, err.message);
+    }
+
+    return null;
 }
+
+module.exports.index = async (req, res) => {
+    const { category } = req.query;
+    let listings;
+    if (category) {
+        listings = await Listing.find({ category });
+    } else {
+        listings = await Listing.find({});
+    }
+    res.render("listing/listings.ejs", {
+        listings,
+        selectedCategory: category
+    });
+};
 
 module.exports.renderNewForm = (req, res) => {
     res.render('listing/new.ejs');
@@ -32,32 +74,13 @@ module.exports.createListing = async (req, res, next) => {
     listing.image = { url, filename };
     const query = `${listing.location}, ${listing.country}`;
 
-    const response = await axios.get(
-        "https://nominatim.openstreetmap.org/search",
-        {
-            params: {
-                q: query,
-                format: "json",
-                limit: 1
-            },
-            headers: {
-                "User-Agent": "Wanderlust-App"
-            }
-        }
-    );
-
-    if (response.data.length > 0) {
-        listing.geometry = {
-            type: "Point",
-            coordinates: [
-                parseFloat(response.data[0].lon), // longitude
-                parseFloat(response.data[0].lat)  // latitude
-            ]
-        };
+    const geometry = await geocodeLocation(query);
+    if (geometry) {
+        listing.geometry = geometry;
     } else {
-        req.flash("error", "Location not found.");
-        return res.redirect("/listings/new");
+        req.flash("error", "Could not generate a map for that location, but the listing was still saved.");
     }
+
     await listing.save();
     req.flash("success", "Successfully made a new listing!");
     res.redirect(`/listings`);
@@ -86,32 +109,14 @@ module.exports.updateListing = async (req, res) => {
     listing.price = req.body.listing.price;
     listing.location = req.body.listing.location;
     listing.country = req.body.listing.country;
+    listing.category = req.body.listing.category;
 
     // Geocode the updated location
     const query = `${listing.location}, ${listing.country}`;
 
-    const response = await axios.get(
-        "https://nominatim.openstreetmap.org/search",
-        {
-            params: {
-                q: query,
-                format: "json",
-                limit: 1
-            },
-            headers: {
-                "User-Agent": "Wanderlust-App"
-            }
-        }
-    );
-
-    if (response.data.length > 0) {
-        listing.geometry = {
-            type: "Point",
-            coordinates: [
-                parseFloat(response.data[0].lon), // longitude
-                parseFloat(response.data[0].lat)  // latitude
-            ]
-        };
+    const geometry = await geocodeLocation(query);
+    if (geometry) {
+        listing.geometry = geometry;
     }
 
     // Update image if a new one is uploaded
@@ -120,6 +125,10 @@ module.exports.updateListing = async (req, res) => {
             url: req.file.path,
             filename: req.file.filename
         };
+    }
+
+    if (!geometry) {
+        req.flash("error", "Could not refresh the map for this listing right now, but the update was saved.");
     }
 
     await listing.save();

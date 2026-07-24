@@ -34,6 +34,32 @@
             <div class="invalid-feedback">Please provide a valid location.</div>
         </div>
         </div>
+        <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+        
+            <select name="listing[category]" class="form-select" required>
+                <option value="Trending" <%=listing.category==="Trending" ? "selected" : "" %>>Trending</option>
+                <option value="Rooms" <%=listing.category==="Rooms" ? "selected" : "" %>>Rooms</option>
+                <option value="Beach" <%=listing.category==="Beach" ? "selected" : "" %>>Beach</option>
+                <option value="Amazing Pools" <%=listing.category==="Amazing Pools" ? "selected" : "" %>>Amazing Pools</option>
+                <option value="Cabins" <%=listing.category==="Cabins" ? "selected" : "" %>>Cabins</option>
+                <option value="Mountains" <%=listing.category==="Mountains" ? "selected" : "" %>>Mountains</option>
+                <option value="Arctic" <%=listing.category==="Arctic" ? "selected" : "" %>>Arctic</option>
+                <option value="Camping" <%=listing.category==="Camping" ? "selected" : "" %>>Camping</option>
+                <option value="City" <%=listing.category==="City" ? "selected" : "" %>>City</option>
+                <option value="Forest" <%=listing.category==="Forest" ? "selected" : "" %>>Forest</option>
+                <option value="Lakefront" <%=listing.category==="Lakefront" ? "selected" : "" %>>Lakefront</option>
+                <option value="Boats" <%=listing.category==="Boats" ? "selected" : "" %>>Boats</option>
+                <option value="Luxury" <%=listing.category==="Luxury" ? "selected" : "" %>>Luxury</option>
+                <option value="Family" <%=listing.category==="Family" ? "selected" : "" %>>Family</option>
+                <option value="Pet Friendly" <%=listing.category==="Pet Friendly" ? "selected" : "" %>>Pet Friendly</option>
+                <option value="Free WiFi" <%=listing.category==="Free WiFi" ? "selected" : "" %>>Free WiFi</option>
+                <option value="Gym" <%=listing.category==="Gym" ? "selected" : "" %>>Gym</option>
+                <option value="Spa" <%=listing.category==="Spa" ? "selected" : "" %>>Spa</option>
+                <option value="Kitchen" <%=listing.category==="Kitchen" ? "selected" : "" %>>Kitchen</option>
+                <option value="Parking" <%=listing.category==="Parking" ? "selected" : "" %>>Parking</option>
+            </select>
+        </div>
         <div class="mb-3 ">
             <label for="country" class="form-label">Country</label>
             <input name="listing[country]" placeholder="India" type="text" class="form-control" value="<%=listing.country%>" required>
