@@ -31,6 +31,7 @@ app.use(express.json());
 
 const dbUrl = process.env.ATLAS_DB_URL || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/wanderlust';
 const sessionSecret = process.env.SECRET || "dev-secret-change-me";
+const sessionCookieName = "wanderlust.sid.v2";
 const mongoOptions = {
     serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 45000,
@@ -53,6 +54,7 @@ try {
     store = MongoStore.create({
         mongoUrl: dbUrl,
         mongoOptions,
+        collectionName: "sessions_v2",
         crypto: {
             secret: sessionSecret,
         },
@@ -67,6 +69,7 @@ try {
 }
 
 const expressOptions = {
+    name: sessionCookieName,
     secret: sessionSecret,
     resave: false,
     saveUninitialized: true,
