@@ -19,10 +19,12 @@
 })()
 
 const taxSwitch = document.getElementById("taxSwitch");
-taxSwitch.addEventListener("change", function () {
-    let taxinfo = document.querySelectorAll(".tax-info");
-    for (info of taxinfo) {
-        info.style.display = taxSwitch.checked ? "inline" : "none";
-    }
 
-})
+if (taxSwitch) {
+    taxSwitch.addEventListener("change", function () {
+        const taxinfo = document.querySelectorAll(".tax-info");
+        for (const info of taxinfo) {
+            info.style.display = taxSwitch.checked ? "inline" : "none";
+        }
+    });
+}
