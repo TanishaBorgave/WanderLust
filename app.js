@@ -44,10 +44,10 @@ connectDB()
 
 const store = MongoStore.create({
     mongoUrl: dbUrl,
-    crypto:{
-        secret: process.env.SECRET 
+    crypto: {
+        secret: process.env.SECRET,
     },
-    touchAfter: 24 * 60 * 60, 
+    touchAfter: 24 * 3600,
 });
 
 store.on("error", function(e){
@@ -120,6 +120,8 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(process.env.PORT||3000,()=>{
-    console.log('Server is running on port 3000');
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
