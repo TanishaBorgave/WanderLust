@@ -10,6 +10,7 @@ const methodOverride = require('method-override');
 const ejsMate=require('ejs-mate');
 const ExpressError = require('./utils/ExpressError');
 const session = require('express-session');
+const MongoStore = require('connect-mongo').default;
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require("passport-local").Strategy;
@@ -28,8 +29,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+const dbUrl = process.env.ATLAS_DB_URL || 'mongodb://127.0.0.1:27017/wanderlust';
+
 async function connectDB() {
-    await mongoose.connect('mongodb://127.0.0.1:27017/wanderlust')
+    await mongoose.connect(dbUrl);
 }
 connectDB()
     .then(() => {
@@ -39,7 +42,20 @@ connectDB()
         console.error('Error connecting to MongoDB:', err);
     });
 
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto:{
+        secret: "SecretCode"
+    },
+    touchAfter: 24 * 60 * 60, 
+});
+
+store.on("error", function(e){
+    console.log("Session Store Error", e);
+});
+
 const expressOptions = {
+    store: store,
     secret: "SecretCode",
     resave: false,
     saveUninitialized: true,
