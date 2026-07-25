@@ -90,6 +90,16 @@ app.get("/demoUser", async(req,res)=>{
     let registeredUser = await User.register(user, "demopassword");
     res.send(registeredUser);
 })
+app.use((req, res, next) => {
+    console.log("==== Middleware ====");
+    console.log("req.user:", req.user);
+
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    res.locals.currentUser = req.user;
+
+    next();
+});
 
 app.use("/listings", listingRoutes);
 app.use("/listings/:id/reviews", reviewRoutes);
