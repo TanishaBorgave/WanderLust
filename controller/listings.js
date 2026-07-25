@@ -35,16 +35,46 @@ async function geocodeLocation(query) {
 }
 
 module.exports.index = async (req, res) => {
-    const { category } = req.query;
-    let listings;
-    if (category) {
-        listings = await Listing.find({ category });
-    } else {
-        listings = await Listing.find({});
+    const { category, amenity, search, price } = req.query;
+    const query = {};
+
+    const selectedFilter = category || amenity;
+
+    if (selectedFilter && selectedFilter.trim()) {
+        const escapedCategory = selectedFilter.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        query.category = new RegExp(`^${escapedCategory}$`, "i");
     }
+
+    if (search && search.trim()) {
+        const escapedSearch = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const searchRegex = new RegExp(escapedSearch, "i");
+        query.$or = [
+            { title: searchRegex },
+            { description: searchRegex },
+            { location: searchRegex },
+            { country: searchRegex },
+            { category: searchRegex }
+        ];
+    }
+
+    if (price && price !== "all") {
+        const priceRanges = {
+            budget: { $lt: 3000 },
+            standard: { $gte: 3000, $lt: 7000 },
+            premium: { $gte: 7000 }
+        };
+
+        if (priceRanges[price]) {
+            query.price = priceRanges[price];
+        }
+    }
+
+    const listings = await Listing.find(query);
     res.render("listing/listings.ejs", {
         listings,
-        selectedCategory: category
+        selectedCategory: selectedFilter || "",
+        searchQuery: search || "",
+        selectedPrice: price || "all"
     });
 };
 

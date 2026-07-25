@@ -1,54 +1,10 @@
 <% layout("/layouts/boilerplate") %>
     <!-- <h3>All Listings</h3> -->
-<style>
-.filters-wrapper{
-    display:flex;
-    align-items:center;
-    gap:1rem;
-    margin:1rem 0;
-}
-
-#filters{
-    flex:1;
-    display:flex;
-    overflow-x:auto;
-    overflow-y:hidden;
-    white-space:nowrap;
-    gap:2rem;
-    scrollbar-width:none;
-}
-
-#filters::-webkit-scrollbar{
-    display:none;
-}
-
-.filter{
-    flex:0 0 auto;
-    text-align:center;
-    min-width:80px;
-    text-decoration:none;
-    color:inherit;
-    opacity:.8;
-}
-
-.filter:hover{
-    opacity:1;
-}
-
-.filter-btn,
-.tax-switch{
-    flex-shrink:0;
-}
-
-.tax-switch{
-    border:1px solid #ddd;
-    border-radius:15px;
-    padding:.7rem 1rem;
-    background:white;
-}
-</style>
 <div class="row align-items-center mt-3">
 <div class ='col-8'>
+    <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+        <p class="text-muted mb-2">Showing results for "<%= searchQuery %>"</p>
+    <% } %>
 <div id="filters">
     <a href="/listings?category=Trending" class="filter">
         <div><i class="fa-solid fa-fire"></i></div>
@@ -125,27 +81,27 @@
         <p>Pet Friendly</p>
     </a>
 
-    <a href="/listings?amenity=Free WiFi" class="filter">
+    <a href="/listings?category=Free WiFi" class="filter">
         <div><i class="fa-solid fa-wifi"></i></div>
         <p>Free WiFi</p>
     </a>
 
-    <a href="/listings?amenity=Gym" class="filter">
+    <a href="/listings?category=Gym" class="filter">
         <div><i class="fa-solid fa-dumbbell"></i></div>
         <p>Gym</p>
     </a>
 
-    <a href="/listings?amenity=Spa" class="filter">
+    <a href="/listings?category=Spa" class="filter">
         <div><i class="fa-solid fa-spa"></i></div>
         <p>Spa</p>
     </a>
 
-    <a href="/listings?amenity=Kitchen" class="filter">
+    <a href="/listings?category=Kitchen" class="filter">
         <div><i class="fa-solid fa-utensils"></i></div>
         <p>Kitchen</p>
     </a>
 
-    <a href="/listings?amenity=Parking" class="filter">
+    <a href="/listings?category=Parking" class="filter">
         <div><i class="fa-solid fa-car"></i></div>
         <p>Parking</p>
     </a>
@@ -153,9 +109,18 @@
 </div>
 <div class="col-4 d-flex justify-content-end align-items-center gap-3">
 
-    <button class="btn btn-outline-dark">
-        <i class="fa-solid fa-sliders"></i> Filters
-    </button>
+    <div class="dropdown">
+        <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid fa-sliders"></i> Filters
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end filter-menu">
+            <li class="dropdown-header px-3">Price</li>
+            <li><a class="dropdown-item <%= !selectedPrice || selectedPrice === 'all' ? 'active' : '' %>" href="/listings">All prices</a></li>
+            <li><a class="dropdown-item <%= selectedPrice === 'budget' ? 'active' : '' %>" href="/listings?price=budget">Under ₹3,000</a></li>
+            <li><a class="dropdown-item <%= selectedPrice === 'standard' ? 'active' : '' %>" href="/listings?price=standard">₹3,000 - ₹7,000</a></li>
+            <li><a class="dropdown-item <%= selectedPrice === 'premium' ? 'active' : '' %>" href="/listings?price=premium">₹7,000+</a></li>
+        </ul>
+    </div>
 
     <div class="tax-switch">
         <div class="form-check form-switch m-0">
@@ -185,17 +150,12 @@
         </div>
         </a>
         <% } %>
+        <% if (listings.length === 0) { %>
+            <div class="col-12 mt-4">
+                <p class="text-center text-muted">No properties found for this search.</p>
+            </div>
+        <% } %>
         </div>
     <!-- <form method ="GET" action="/listings/new">
         <button>Create New Listing</button>
     </form> -->
-<script>
-    let taxSwitch = document.getElementById("taxSwitch");
-    taxSwitch.addEventListener("change", function() {
-        let taxinfo = document.querySelectorAll(".tax-info");
-        for(info of taxinfo){
-            info.style.display = taxSwitch.checked ? "inline" : "none";
-        }
-
-    })
-</script>

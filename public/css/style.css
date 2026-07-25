@@ -253,3 +253,82 @@ body{
 .leaflet-control-zoom a {
     font-size: 18px;
 }
+
+.filters-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+#filters {
+    flex: 1;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    gap: 2rem;
+    scrollbar-width: none;
+}
+
+#filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filter {
+    flex: 0 0 auto;
+    text-align: center;
+    min-width: 80px;
+    text-decoration: none;
+    color: inherit;
+    opacity: .8;
+}
+
+.filter:hover {
+    opacity: 1;
+}
+
+.filter-btn,
+.tax-switch {
+    flex-shrink: 0;
+}
+
+.tax-switch {
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    padding: .7rem 1rem;
+    background: white;
+}
+
+.filter-menu {
+    min-width: 16rem;
+    padding: 1rem;
+}
+
+.filter-menu .dropdown-item.active,
+.filter-menu .dropdown-item:active {
+    background-color: #fe424d;
+}
+
+.btn-search {
+    background-color: #fe424d;
+    color: white;
+    border-radius: 25px;
+    padding: 0 1rem 0 1rem;
+}
+    
+.btn-search:hover {
+    background-color: #fe424d;
+    color: white
+}
+    
+.btn-search i {
+    display: inline;
+    margin-right: 0.5rem;
+}
+    
+.search-input {
+    border-radius: 25px;
+    padding: 0.5rem 3rem 0.5rem 3rem;
+    font-size: 0.8rem;
+}
