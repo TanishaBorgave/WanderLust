@@ -69,13 +69,23 @@ module.exports.index = async (req, res) => {
         }
     }
 
-    const listings = await Listing.find(query);
-    res.render("listing/listings.ejs", {
-        listings,
-        selectedCategory: selectedFilter || "",
-        searchQuery: search || "",
-        selectedPrice: price || "all"
-    });
+    try {
+        const listings = await Listing.find(query);
+        return res.render("listing/listings.ejs", {
+            listings,
+            selectedCategory: selectedFilter || "",
+            searchQuery: search || "",
+            selectedPrice: price || "all"
+        });
+    } catch (err) {
+        req.flash("error", "Database connection issue. Please try again in a moment.");
+        return res.render("listing/listings.ejs", {
+            listings: [],
+            selectedCategory: selectedFilter || "",
+            searchQuery: search || "",
+            selectedPrice: price || "all"
+        });
+    }
 };
 
 module.exports.renderNewForm = (req, res) => {

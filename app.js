@@ -31,9 +31,14 @@ app.use(express.json());
 
 const dbUrl = process.env.ATLAS_DB_URL || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/wanderlust';
 const sessionSecret = process.env.SECRET || "dev-secret-change-me";
+const mongoOptions = {
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
+    family: 4,
+};
 
 async function connectDB() {
-    await mongoose.connect(dbUrl);
+    await mongoose.connect(dbUrl, mongoOptions);
 }
 connectDB()
     .then(() => {
@@ -47,6 +52,7 @@ let store;
 try {
     store = MongoStore.create({
         mongoUrl: dbUrl,
+        mongoOptions,
         crypto: {
             secret: sessionSecret,
         },
@@ -99,16 +105,7 @@ app.get("/demoUser", async(req,res)=>{
     let registeredUser = await User.register(user, "demopassword");
     res.send(registeredUser);
 })
-app.use((req, res, next) => {
-    console.log("==== Middleware ====");
-    console.log("req.user:", req.user);
-
-    res.locals.success = req.flash("success");
-    res.locals.error = req.flash("error");
-    res.locals.currentUser = req.user;
-
-    next();
-});
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 app.use("/listings", listingRoutes);
 app.use("/listings/:id/reviews", reviewRoutes);
