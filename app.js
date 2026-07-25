@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const dbUrl = process.env.ATLAS_DB_URL || 'mongodb://127.0.0.1:27017/wanderlust';
+const dbUrl = process.env.ATLAS_DB_URL;
 
 async function connectDB() {
     await mongoose.connect(dbUrl);
@@ -110,6 +110,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(3000,()=>{
+app.listen(process.env.PORT||3000,()=>{
     console.log('Server is running on port 3000');
 });
