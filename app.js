@@ -10,7 +10,6 @@ const methodOverride = require('method-override');
 const ejsMate=require('ejs-mate');
 const ExpressError = require('./utils/ExpressError');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require("passport-local").Strategy;
@@ -31,7 +30,7 @@ app.use(express.json());
 
 const dbUrl = process.env.ATLAS_DB_URL || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/wanderlust';
 const sessionSecret = process.env.SECRET || "dev-secret-change-me";
-const sessionCookieName = "wanderlust.sid.v2";
+const sessionCookieName = "wanderlust.sid.v3";
 const mongoOptions = {
     serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 45000,
@@ -49,25 +48,6 @@ connectDB()
         console.error('Error connecting to MongoDB:', err);
     });
 
-let store;
-try {
-    store = MongoStore.create({
-        mongoUrl: dbUrl,
-        mongoOptions,
-        collectionName: "sessions_v2",
-        crypto: {
-            secret: sessionSecret,
-        },
-        touchAfter: 24 * 3600,
-    });
-
-    store.on("error", function(e){
-        console.log("Session Store Error", e);
-    });
-} catch (e) {
-    console.error("Failed to initialize Mongo session store, falling back to memory store:", e.message);
-}
-
 const expressOptions = {
     name: sessionCookieName,
     secret: sessionSecret,
@@ -79,10 +59,6 @@ const expressOptions = {
         httpOnly: true
     },
 };
-
-if (store) {
-    expressOptions.store = store;
-}
 
 app.use(session(expressOptions));
 app.use(flash());
